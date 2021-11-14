@@ -1,12 +1,12 @@
 # レイヤーの個数 ex) tops, pants, shoes -> LAYER = 3
 import glob
+from util.show_fashion_images import show_fashion_images
 from util_class.score_estimater import ScoreEstimater
 
 from util.select_max_incremental_item import select_max_incremental_item
 from PIL import Image
 import tomotopy as tp
 from util.init_all_item import init_all_item 
-
 LAYER = 3
 LAYER_NAME = ["top", "pants", "shoes"]
 # 関数近似許容値 今は適当な数字
@@ -42,4 +42,4 @@ while delta_obj >= EPSILON:
     # 今回のループでの最適値はobj[LAYER-1][0]に格納されている。
     delta_obj = obj[LAYER-1][0] - obj[LAYER-1][1]
     obj[LAYER-1][1] = obj[LAYER-1][0]
-[print(obj_i) for obj_i in obj]
+show_fashion_images(select_items)
