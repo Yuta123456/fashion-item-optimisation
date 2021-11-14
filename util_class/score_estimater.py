@@ -34,15 +34,15 @@ class ScoreEstimater:
         # coodinateは、FashionItemの配列
         for coodinate in coodinates:
             doc = []
+            ver = 1
             for item in coodinate:
-                ver = 1
                 doc += item.get_attr()
-                inf_doc = self.topic_model.make_doc(doc)
-                result = self.topic_model.infer(inf_doc)
-                topic_prob = result[0]
-                for topic in topic_prob:
-                    ver *= (1 - topic)
-                ver_score += ver
+            inf_doc = self.topic_model.make_doc(doc)
+            result = self.topic_model.infer(inf_doc)
+            topic_prob = result[0]
+            for topic in topic_prob:
+                ver *= (1 - topic)
+            ver_score += (1 - ver)
         return ver_score
 
     def estimate_similarity_score(self, fashion_item, select_items,layer):
