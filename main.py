@@ -21,7 +21,7 @@ delta_obj = EPSILON + 1
 obj = [[0, 0] for i in range(LAYER)]
 
 # FashionItemの初期化
-all_items = init_all_item(LAYER, LAYER_NAME)
+all_items = init_all_item(LAYER, LAYER_NAME, 10)
 
 # TODO: model init
 topic_model = tp.LDAModel.load('lda_model.bin')

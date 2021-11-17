@@ -1,4 +1,5 @@
 
+from types import coroutine
 from util.image_similarity_measures import rmse
 from PIL import Image
 import numpy as np
@@ -16,17 +17,7 @@ class ScoreEstimater:
         com_score = 0
         # coodinateは、FashionItemの配列
         for coodinate in coodinates:
-            doc = []
-            for item in coodinate:
-                doc += item.get_attr()
-                try:
-                    inf_doc = self.topic_model.make_doc(doc)
-                except:
-                    print(doc, item.get_attr(), )
-                result = self.topic_model.infer(inf_doc)
-                # 対数であったり、問題はありそう。
-                result = result[1]
-                com_score += math.pow(math.e, result)
+            com_score += self.estimate_coodinate_compatibility(coodinate)
         return com_score
 
     def estimate_versatility_score(self, coodinates): 
@@ -43,7 +34,14 @@ class ScoreEstimater:
             for topic in topic_prob:
                 ver *= (1 - topic)
             ver_score += (1 - ver)
-        return ver_score
+        # FIXME:
+        # topic_num = self.topic_model.k
+        topic_num = 1
+        coodinate_len = len(coodinates)
+        if (topic_num * coodinate_len) == 0:
+            return ver_score
+        # topic数で正規化。0-1の範囲に収まる
+        return ver_score / (topic_num * coodinate_len)
 
     def estimate_similarity_score(self, fashion_item, select_items,layer):
         # 今の閾値は適当
@@ -74,4 +72,35 @@ class ScoreEstimater:
 
         # 距離計算
         result = rmse(image_a, image_b)
+        return result
+    
+    """
+    重複度計算
+    """
+    def calc_multiplicity(self, coodinates):
+        com_good_count = 0
+        # だいたいの値
+        threshold = 0.015
+        # coodinateは、FashionItemの配列
+        for coodinate in coodinates:
+            doc = []
+            for item in coodinate:
+                doc += item.get_attr()
+            com_score = self.estimate_compatibility_score(coodinate)
+            if com_score > threshold:
+                com_good_count += 1
+        return com_good_count
+
+    def estimate_coodinate_compatibility(self, coodinate):
+        doc = []
+        for item in coodinate:
+            doc += item.get_attr()
+        try:
+            inf_doc = self.topic_model.make_doc(doc)
+        except:
+            print(doc)
+        result = self.topic_model.infer(inf_doc)
+        # 対数であったり、問題はありそう。
+        result = result[1]
+        result = math.pow(math.e, result) * 10**20
         return result

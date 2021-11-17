@@ -3,9 +3,10 @@ import os
 from PIL import Image
 import uuid
 from util_class.FashionItem import FashionItem
-def init_all_item(LAYER, LAYER_NAME):
+def init_all_item(LAYER, LAYER_NAME, length):
     all_item = [[] for i in range(LAYER)]
-    dir_pathes = glob.glob('../images/RichWearImageSprited/**/**/')[:100]
+    dir_pathes = glob.glob('../images/RichWearImageSprited/**/**/')[:length]
+    print(dir_pathes)
     for dir_path in dir_pathes:
         for layer in range(LAYER):
             layer_name = LAYER_NAME[layer]
