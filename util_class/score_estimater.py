@@ -44,8 +44,7 @@ class ScoreEstimater:
         return ver_score / (topic_num * coodinate_len)
 
     def estimate_similarity_score(self, fashion_item, select_items,layer):
-        # 今の閾値は適当
-        threshold = 0.015
+        threshold = 0.026469 + 0.006501
         covering_item_ids = set()
         covering_item_cnt = 0
         for item in self.all_items[layer]:
@@ -79,8 +78,7 @@ class ScoreEstimater:
     """
     def calc_multiplicity(self, coodinates):
         com_good_count = 0
-        # だいたいの値
-        threshold = 0.015
+        threshold = 9.238552e-14
         # coodinateは、FashionItemの配列
         for coodinate in coodinates:
             doc = []
@@ -102,5 +100,5 @@ class ScoreEstimater:
         result = self.topic_model.infer(inf_doc)
         # 対数であったり、問題はありそう。
         result = result[1]
-        result = math.pow(math.e, result) * 10**20
+        result = math.pow(math.e, result)
         return result
