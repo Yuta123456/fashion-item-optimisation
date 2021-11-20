@@ -1,3 +1,6 @@
+from PIL import Image
+
+
 class FashionItem:
     # instance variable
     image = None
@@ -7,16 +10,18 @@ class FashionItem:
     attr = []
     # 一意に定まるID
     id = None
-    def __init__(self, image, layer, attr, id):
+    # 画像へのパス
+    image_path = None
+    def __init__(self, image_path, layer, attr, id):
         # TODO: implement init process
-        self.image = image
+        self.image_path = image_path
         self.layer = layer
         self.attr = attr
         self.id = id
         return
     
     def get_image(self):
-        return self.image
+        return Image.open(self.image_path)
     
     def get_layer(self):
         return self.layer
