@@ -1,5 +1,6 @@
 # レイヤーの個数 ex) tops, pants, shoes -> LAYER = 3
 import glob
+from util.save_closet import save_closet
 from util.show_fashion_images import show_fashion_images
 from util_class.score_estimater import ScoreEstimater
 
@@ -21,7 +22,7 @@ delta_obj = EPSILON + 1
 obj = [[0, 0] for i in range(LAYER)]
 
 # FashionItemの初期化
-all_items = init_all_item(LAYER, LAYER_NAME, 10)
+all_items = init_all_item(LAYER, LAYER_NAME, 100)
 
 # TODO: model init
 topic_model = tp.LDAModel.load('lda_model.bin')
@@ -43,3 +44,4 @@ while delta_obj >= EPSILON:
     delta_obj = obj[LAYER-1][0] - obj[LAYER-1][1]
     obj[LAYER-1][1] = obj[LAYER-1][0]
 show_fashion_images(select_items)
+save_closet(select_items, "yuta_tanaka")

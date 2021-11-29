@@ -34,9 +34,7 @@ class ScoreEstimater:
             for topic in topic_prob:
                 ver *= (1 - topic)
             ver_score += (1 - ver)
-        # FIXME:
-        # topic_num = self.topic_model.k
-        topic_num = 1
+        topic_num = self.topic_model.k
         coodinate_len = len(coodinates)
         if (topic_num * coodinate_len) == 0:
             return ver_score
@@ -84,7 +82,7 @@ class ScoreEstimater:
             doc = []
             for item in coodinate:
                 doc += item.get_attr()
-            com_score = self.estimate_compatibility_score(coodinate)
+            com_score = self.estimate_coodinate_compatibility(coodinate)
             if com_score > threshold:
                 com_good_count += 1
         return com_good_count
