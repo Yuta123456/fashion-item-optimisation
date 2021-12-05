@@ -47,3 +47,4 @@ for layer_items in all_items:
         similarity_score = model.calc_image_similarity(pair[0], pair[1])
         with open("data/similarity.txt", mode='a') as f:
             f.write(str(similarity_score) + "\n")
+# eta: 0.00090 alpha: 0.005

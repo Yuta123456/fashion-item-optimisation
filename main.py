@@ -7,7 +7,7 @@ from util_class.score_estimater import ScoreEstimater
 from util.select_max_incremental_item import select_max_incremental_item
 from PIL import Image
 import tomotopy as tp
-from util.init_all_item import init_all_item 
+from util.init_all_item import init_all_item
 LAYER = 3
 LAYER_NAME = ["top", "pants", "shoes"]
 # 関数近似許容値 今は適当な数字
@@ -16,16 +16,15 @@ EPSILON = 0.01
 TIME_STEP = 4
 select_items = [[] for i in range(LAYER)]
 all_items = [[] for i in range(LAYER)]
-models = None
+
 delta_obj = EPSILON + 1
-# [now_obj, pre_obj] 
+# [now_obj, pre_obj]
 obj = [[0, 0] for i in range(LAYER)]
 
 # FashionItemの初期化
 all_items = init_all_item(LAYER, LAYER_NAME, 100)
 
-# TODO: model init
-topic_model = tp.LDAModel.load('lda_model.bin')
+topic_model = tp.LDAModel.load('lda_model_topic_10.bin')
 
 model = ScoreEstimater(topic_model, all_items)
 for i in range(LAYER):

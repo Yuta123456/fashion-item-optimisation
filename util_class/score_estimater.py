@@ -72,7 +72,7 @@ class ScoreEstimater:
         return result
     
     """
-    重複度計算
+    洋服の重複度
     """
     def calc_multiplicity(self, coodinates):
         com_good_count = 0
