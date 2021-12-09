@@ -31,3 +31,6 @@ class FashionItem:
     
     def get_id(self):
         return self.id
+
+    def get_image_path(self):
+        return self.image_path
