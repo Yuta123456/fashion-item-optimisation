@@ -14,7 +14,7 @@ def init_all_item(LAYER, LAYER_NAME, length):
                 image_path = dir_path + f"{layer_name}.jpg"
             else:
                 continue
-            with open(dir_path + "attribute.txt") as f:
+            with open(dir_path + "attribute2.txt") as f:
                 # 該当するレイヤーのアイテムだけ取得
                 attribute = [s.strip() for s in f.readlines() if s.startswith(layer_name)]
                 attribute = list(set(attribute))
