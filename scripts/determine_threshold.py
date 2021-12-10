@@ -6,13 +6,10 @@ from PIL import Image
 import tomotopy as tp
 import sys
 import datetime
+from constants.optimisation import LAYER, LAYER_NAME
 sys.path.append("D:\\fashion\\optimisation\\")
 from util_class.score_estimater import ScoreEstimater
 from util.init_all_item import init_all_item 
-LAYER = 3
-LAYER_NAME = ["top", "pants", "shoes"]
-# 枚数の制約
-TIME_STEP = 4
 all_items = [[] for i in range(LAYER)]
 models = None
 
