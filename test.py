@@ -7,11 +7,11 @@ from util.show_closet_info import show_closet_info
 from util.show_fashion_images import show_fashion_images
 from util_class.score_estimater import ScoreEstimater
 import tomotopy as tp
-all_items = init_all_item(LAYER, LAYER_NAME, 30)
+all_items = init_all_item(LAYER, LAYER_NAME, 100)
 
 topic_model = tp.LDAModel.load('lda_model_topic_10.bin')
 estimater = ScoreEstimater(topic_model, all_items)
-closet = load_closet("yuta_tanaka", 3, ["top", "pants", "shoes"])
+closet = load_closet("yuta_tanaka")
 # print(closet)
-show_closet_info(closet, LAYER_NAME, LAYER)
-print("com:{} ver:{} sim:{} mul:{} ".format(*calc_closet_score(closet, estimater)))
+show_fashion_images(closet)
+print("com:{} ver:{} sim:{} mul:{} "    .format(*calc_closet_score(closet, estimater)))

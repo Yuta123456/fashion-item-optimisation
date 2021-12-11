@@ -1,9 +1,12 @@
 
 from types import coroutine
+from constants.optimisation import LAYER
 from util.image_similarity_measures import rmse
 from PIL import Image
 import numpy as np
 import math
+
+from util.record_data import record_data
 class ScoreEstimater:
     # instance variable
     topic_model = None
@@ -42,13 +45,13 @@ class ScoreEstimater:
         return ver_score / (topic_num * coodinate_len)
 
     def estimate_similarity_score(self, fashion_item, select_items,layer):
-        threshold = 0.026469 + 0.006501
+        threshold = 0.025112
         covering_item_ids = set()
         covering_item_cnt = 0
         for item in self.all_items[layer]:
             for select_item in select_items[layer]:
                 # もし類似度計算をして、閾値より低ければカバーしたと断定。
-                if self.calc_image_similarity(item, select_item) < threshold and item.get_id() not in covering_item_ids : 
+                if item.get_id() not in covering_item_ids and self.calc_image_similarity(item, select_item) < threshold : 
                     covering_item_ids.add(item.get_id())
                     break
         
@@ -69,6 +72,7 @@ class ScoreEstimater:
 
         # 距離計算
         result = rmse(image_a, image_b)
+        # record_data("data/simirality.txt", str(result))
         return result
     
     """
@@ -76,7 +80,7 @@ class ScoreEstimater:
     """
     def calc_multiplicity(self, coodinates):
         com_good_count = 0
-        threshold = 9.238552e-14
+        threshold = 7
         # coodinateは、FashionItemの配列
         for coodinate in coodinates:
             doc = []
@@ -99,4 +103,18 @@ class ScoreEstimater:
         # 対数であったり、問題はありそう。
         result = result[1]
         result = math.pow(math.e, result)
+        result = result * pow(10, 22)
+        result = 0 if result < 1 else math.log(result)
         return result
+    
+    def estimate_closet_similarity_score(self,select_items):
+        threshold = 0.025112
+        covering_item_ids = set()
+        for layer in range(LAYER):
+            for item in self.all_items[layer]:
+                for select_item in select_items[layer]:
+                    # もし類似度計算をして、閾値より低ければカバーしたと断定。
+                    if self.calc_image_similarity(item, select_item) < threshold : 
+                        covering_item_ids.add(item.get_id())
+                        break
+        return len(covering_item_ids)
