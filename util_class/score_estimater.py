@@ -11,6 +11,7 @@ class ScoreEstimater:
     # instance variable
     topic_model = None
     all_items = None
+    similarity_cache = {}
     def __init__(self, topic_model, all_items):
         # TODO: implement init process
         self.topic_model = topic_model
@@ -63,6 +64,9 @@ class ScoreEstimater:
         return covering_item_cnt
 
     def calc_image_similarity(self, item_a, item_b):
+        key = (item_a.get_id(), item_b.get_id())
+        if key in self.similarity_cache:
+            return self.similarity_cache[key]
         image_a = np.array(item_a.get_image())
         # image1のサイズ取得
         image_a_shape = image_a.shape
@@ -72,6 +76,7 @@ class ScoreEstimater:
 
         # 距離計算
         result = rmse(image_a, image_b)
+        self.similarity_cache[key] = result
         # record_data("data/simirality.txt", str(result))
         return result
     
