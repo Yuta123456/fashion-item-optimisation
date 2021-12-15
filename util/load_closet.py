@@ -9,7 +9,7 @@ import re
 
 def load_closet(filename):
     select_items = [[] for i in range(LAYER)]
-    with open("data/" + filename, mode='r') as f:
+    with open("closet/" + filename, mode='r') as f:
         for line in f:
             line = line.strip()
             if os.path.exists(line):
