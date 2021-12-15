@@ -11,3 +11,10 @@ LAYER_NAME = ["top", "pants", "shoes"]
 EPSILON = 0.001
 # 枚数の制約
 TIME_STEP = 4
+
+from enum import Enum
+class Gender(Enum):
+    MEN = "MEN"
+    WOMEN = "WOMEN"
+# ユーザの性別を指定
+USER_GENDER = Gender("MEN")
