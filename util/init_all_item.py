@@ -13,12 +13,14 @@ def init_all_item(LAYER, LAYER_NAME, length):
         photos = [s.strip() for s in f.readlines()]
     with open("../images/RichWear/gender.txt") as f:
         genders = [s.strip() for s in f.readlines()]
-    print(photos[:10])
 
     for i in range(len(photos)):
         photo2gender[photos[i]] = genders[i]
     all_item = [[] for i in range(LAYER)]
-    dir_pathes = glob.glob('../images/RichWearImageSprited/**/**/')[:length]
+    # dir_pathes = glob.glob('../images/RichWearImageSprited/**/**/')[:length]
+    # FIXME: 今はdataset_pathのみ取得
+    with open("experiments/dataset_path.txt", mode='r') as f:
+        dir_pathes = [s.strip() for s in f.readlines()]
     for dir_path in dir_pathes:
         photo_name = dir_path.replace("\\", "/")
         photo_name = re.search(r"\d-\d/\d*_\d*", photo_name).group() + ".jpg"
@@ -42,4 +44,6 @@ def init_all_item(LAYER, LAYER_NAME, length):
                 continue
             item = FashionItem(image_path, layer, attribute, id)
             all_item[layer].append(item)
+    for i in range(LAYER):
+        all_item[i] = all_item[i][:length]
     return all_item

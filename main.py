@@ -1,23 +1,25 @@
 # レイヤーの個数 ex) tops, pants, shoes -> LAYER = 3
-
+import time
+import uuid
 from constants.optimisation import EPSILON, LAYER, LAYER_NAME, TIME_STEP
 from util.calc_closet_score import calc_closet_score
+from util.init_closet import init_closet
 from util.save_closet import save_closet
 from util_class.score_estimater import ScoreEstimater
 
 from util.select_max_incremental_item import select_max_incremental_item
 import tomotopy as tp
 from util.init_all_item import init_all_item
-
-select_items = [[] for i in range(LAYER)]
-all_items = [[] for i in range(LAYER)]
+import sys
+start = time.time()
+all_items = init_all_item(LAYER, LAYER_NAME, 180)
+select_items = init_closet(all_items, TIME_STEP)
 
 delta_obj = EPSILON + 1
 # [now_obj, pre_obj]
 pre_obj = 0
 
 # FashionItemの初期化
-all_items = init_all_item(LAYER, LAYER_NAME, 100)
 
 topic_model = tp.LDAModel.load('lda_model_topic_10.bin')
 
@@ -28,7 +30,7 @@ roop_cnt = 0
 while delta_obj >= EPSILON:
     for layer in range(LAYER):
         select_items[layer] = []
-        for time in range(TIME_STEP):
+        for t in range(TIME_STEP):
             # sigmaはその際の増加分
             sigma, additional_item = select_max_incremental_item(select_items, all_items,layer, model)
             # 増加分が最大となるアイテムを追加
@@ -42,5 +44,13 @@ while delta_obj >= EPSILON:
     print(f"{roop_cnt}回目のループでの増加分{delta_obj}")
 
 print(calc_closet_score(select_items, model))
-save_closet(select_items, "yuta_tanaka")
-
+try:
+    closet_name = sys.argv[1]
+except IndexError as e:
+    closet_name = str(uuid.uuid1())[:6]
+    print("クローゼットの名前の指定がありませんでした。")
+    print(f"クローゼットの名前を{closet_name}で保存します")
+    pass
+save_closet(select_items, closet_name)
+elapsed_time = time.time() - start
+print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
