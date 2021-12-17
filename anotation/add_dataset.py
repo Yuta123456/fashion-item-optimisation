@@ -17,7 +17,7 @@ def get_img_data(f, maxsize=(600, 450), first=False):
         return bio.getvalue()
     return ImageTk.PhotoImage(img)
 
-dir_pathes = glob.glob('../images/RichWearImageSprited/**/**/')[900:2000]
+dir_pathes = glob.glob('../images/RichWearImageSprited/**/**/')[2000:4000]
 with open("anotation/finish.txt", mode="r") as f:
     finish = set([s.strip() for s in f.readlines()])
 # イベントループ
