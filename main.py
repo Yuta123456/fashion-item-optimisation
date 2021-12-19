@@ -12,7 +12,7 @@ import tomotopy as tp
 from util.init_all_item import init_all_item
 import sys
 start = time.time()
-all_items = init_all_item(LAYER, LAYER_NAME, 180)
+all_items = init_all_item(LAYER, LAYER_NAME, 400)
 select_items = init_closet(all_items, TIME_STEP)
 
 delta_obj = EPSILON + 1

@@ -1,12 +1,9 @@
 
-from types import coroutine
+
 from constants.optimisation import LAYER
 from util.image_similarity_measures import rmse
-from PIL import Image
 import numpy as np
 import math
-
-from util.record_data import record_data
 class ScoreEstimater:
     # instance variable
     topic_model = None
@@ -61,7 +58,9 @@ class ScoreEstimater:
             if self.calc_image_similarity(item, fashion_item) < threshold and item.get_id() not in covering_item_ids: 
                 covering_item_ids.add(item.get_id())
                 covering_item_cnt += 1
-        return covering_item_cnt
+        # アイテム数で正規化
+        all_item_cnt = len(self.all_items[layer])
+        return covering_item_cnt / all_item_cnt
 
     def calc_image_similarity(self, item_a, item_b):
         key = (item_a.get_id(), item_b.get_id())
@@ -121,5 +120,5 @@ class ScoreEstimater:
                     # もし類似度計算をして、閾値より低ければカバーしたと断定。
                     if self.calc_image_similarity(item, select_item) < threshold : 
                         covering_item_ids.add(item.get_id())
-                        break
+                        break   
         return len(covering_item_ids)
