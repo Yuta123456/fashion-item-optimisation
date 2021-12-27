@@ -1,4 +1,4 @@
-from os import close
+from os import close, error
 import sys
 sys.path.append("D:\\fashion\\optimisation\\")
 from constants.optimisation import LAYER
@@ -8,15 +8,16 @@ import cv2
 args = sys.argv
 try: 
     closet_name = args[1]
-    image_name = args[2]
 except IndexError as e: 
     # 引数が足りないことを示す
-    raise Exception("引数が足りません.")
-
+    raise Exception("引数が足りません.対象のクローゼット名を指定してください")
+try:
+    image_name = args[2]
+except IndexError as e:
+    print("引数が足りません。画像をクローゼット名と同じ名前で保存します")
+    image_name = args[1]
 closet = load_closet(closet_name)
-# 画像の読み込み
-# im1 = cv2.imread('data/src/lena.jpg')
-# im2 = cv2.imread('data/src/rocket.jpg')
+
 def hconcat_resize_min(im_list, interpolation=cv2.INTER_CUBIC):
     h_min = min(im.shape[0] for im in im_list)
     im_list_resize = [cv2.resize(im, (int(im.shape[1] * h_min / im.shape[0]), h_min), interpolation=interpolation)
