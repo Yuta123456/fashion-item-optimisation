@@ -5,7 +5,7 @@ import math
 
 def describe(filepath):
     df = pd.read_csv(filepath, sep="\n").loc[:500000]
-    df = df[df != 0].dropna()
+    # df = df[df != 0].dropna()
     dmin = df.min().values[0]
     dmax = df.max().values[0]
     # df = df.applymap(lambda x:(x - (dmin))/(dmax - dmin))
@@ -18,8 +18,8 @@ def describe(filepath):
     plt.show()
     print(df.describe())
 
-describe("data/compatibility.txt")
-describe("data/simirality.txt")
-describe("data/versatility.txt")
-describe("data/multiply.txt")
-describe("data/log_compatibility.txt")
+describe("data/com.txt")
+describe("data/sim.txt")
+describe("data/ver.txt")
+describe("data/mul.txt")
+# describe("data/log_compatibility.txt")
