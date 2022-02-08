@@ -29,5 +29,5 @@ def load_closet(filename):
             # print(f"{layer} {attribute}")
             item = FashionItem(image_path, layer, attribute, id)
             select_items[layer].append(item)
-    print(select_items)
+    # print(select_items)
     return select_items

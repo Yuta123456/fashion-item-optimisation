@@ -1,6 +1,7 @@
 
 
-from constants.optimisation import LAYER
+from cv2 import threshold
+from constants.optimisation import LAYER, SIGMA_B
 from util.image_similarity_measures import rmse
 import numpy as np
 import math
@@ -40,6 +41,10 @@ class ScoreEstimater:
         if (topic_num * coodinate_len) == 0:
             return ver_score
         # topic数で正規化。0-1の範囲に収まる
+        del doc
+        del inf_doc
+        del result  
+        del topic_prob
         return ver_score / (topic_num * coodinate_len)
 
     def estimate_similarity_score(self, fashion_item, select_items,layer):
@@ -60,6 +65,7 @@ class ScoreEstimater:
                 covering_item_cnt += 1
         # アイテム数で正規化
         all_item_cnt = len(self.all_items[layer])
+        del covering_item_ids
         return covering_item_cnt / all_item_cnt
 
     def calc_image_similarity(self, item_a, item_b):
@@ -71,12 +77,16 @@ class ScoreEstimater:
         image_a_shape = image_a.shape
         # Resize処理をかける
         image_b = np.array(item_b.get_image())
-        image_b.resize(image_a_shape)
+        # image_b.resize(image_a_shape)
+        image_b = np.resize(image_b, image_a_shape)
 
         # 距離計算
         result = rmse(image_a, image_b)
         self.similarity_cache[key] = result
         # record_data("data/simirality.txt", str(result))
+        del image_a
+        del image_b
+        del image_a_shape
         return result
     
     """
@@ -93,6 +103,8 @@ class ScoreEstimater:
             com_score = self.estimate_coodinate_compatibility(coodinate)
             if com_score > threshold:
                 com_good_count += 1
+        del doc
+
         return com_good_count
 
     def estimate_coodinate_compatibility(self, coodinate):
@@ -109,11 +121,13 @@ class ScoreEstimater:
         result = math.pow(math.e, result)
         result = result * pow(10, 22)
         result = 0 if result < 1 else math.log(result)
+        del doc
+        del inf_doc
         return result
     
-    def estimate_closet_similarity_score(self,select_items):
-        threshold = 0.025112
+    def estimate_closet_similarity_score(self,select_items):       
         covering_item_ids = set()
+        threshold = 0.025112
         for layer in range(LAYER):
             for item in self.all_items[layer]:
                 for select_item in select_items[layer]:

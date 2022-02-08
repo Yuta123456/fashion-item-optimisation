@@ -53,4 +53,4 @@ except IndexError as e:
     pass
 save_closet(select_items, closet_name)
 elapsed_time = time.time() - start
-print ("elapsed_time:{0}".format(elapsed_time) + "[sec]")
+print("elapsed_time:{0}".format(elapsed_time) + "[sec]")

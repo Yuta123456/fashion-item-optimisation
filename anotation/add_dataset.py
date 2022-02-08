@@ -17,9 +17,13 @@ def get_img_data(f, maxsize=(600, 450), first=False):
         return bio.getvalue()
     return ImageTk.PhotoImage(img)
 
-dir_pathes = glob.glob('../images/RichWearImageSprited/**/**/')[2000:4000]
-with open("anotation/finish.txt", mode="r") as f:
-    finish = set([s.strip() for s in f.readlines()])
+# dir_pathes = glob.glob('../images/RichWearImageSprited/**/**/')[2000:4000]
+# dir_pathes = glob.glob('../images/RichWearImageSprited/**/**/')[0:1000]
+dir_pathes = []
+with open('./experiments/dataset_path.txt', mode='r') as f:
+    dir_pathes = [s.strip() for s in f.readlines()]
+# with open("anotation/finish.txt", mode="r") as f:
+#     finish = set([s.strip() for s in f.readlines()])
 # イベントループ
 image_elem = sg.Image(key="-IMAGE-")
 layout = [  [sg.Text("a")],
@@ -29,8 +33,8 @@ window = sg.Window('アノテーション', layout, finalize=True)
 flg = times_result
 for p in dir_pathes:
     # ウィンドウに配置するコンポーネント
-    if p in finish:
-        continue
+    # if p in finish:
+    #     continue
     image_path = p[:-1].replace("RichWearImageSprited", "RichWear/photos") + ".jpg"
     image_elem.update(data=get_img_data(image_path, first=flg))
     flg = False
@@ -45,6 +49,6 @@ for p in dir_pathes:
             break
         elif event == 'NG':
             break
-    with open("anotation/finish.txt", mode="a") as f:
-        f.write(p + "\n")
+    # with open("anotation/finish.txt", mode="a") as f:
+    #     f.write(p + "\n")
 window.close()
