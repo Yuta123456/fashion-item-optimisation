@@ -11,6 +11,13 @@ from util.select_max_incremental_item import select_max_incremental_item
 import tomotopy as tp
 from util.init_all_item import init_all_item
 import sys
+import torch
+from torchvision import models, transforms
+import numpy as np
+from PIL import Image
+import torch.nn as nn
+
+
 start = time.time()
 all_items = init_all_item(LAYER, LAYER_NAME, 400)
 select_items = init_closet(all_items, TIME_STEP)
@@ -22,8 +29,13 @@ pre_obj = 0
 # FashionItemの初期化
 
 topic_model = tp.LDAModel.load('lda_model_topic_10.bin')
+similarity_model = models.resnet18(pretrained=True)
+num_ftrs = similarity_model.fc.in_features
 
-model = ScoreEstimater(topic_model, all_items)
+similarity_model.fc = nn.Linear(num_ftrs,  738)
+
+similarity_model.load_state_dict(torch.load('model.pth'))
+model = ScoreEstimater(topic_model, all_items, similarity_model)
 for i in range(LAYER):
     print(f"count of layer {LAYER_NAME[i]}: {len(all_items[i])}")
 roop_cnt = 0
