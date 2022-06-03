@@ -16,7 +16,5 @@ def calc_closet_score(select_items, estimater: ScoreEstimater):
     versatility_score = estimater.estimate_versatility_score(coodinates) * WEIGHT["ver"]
     simirality_score = estimater.estimate_closet_similarity_score(select_items) * WEIGHT["sim"]
     multiply_score = estimater.calc_multiplicity(coodinates) * WEIGHT["mul"]
-    del coodinates
-    del k
-    del itertor
+
     return [compatibility_score, versatility_score, simirality_score, multiply_score]
