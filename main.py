@@ -12,7 +12,7 @@ import tomotopy as tp
 from util.init_all_item import init_all_item
 import sys
 import torch
-from torchvision import models, transforms
+from torchvision import models
 import numpy as np
 from PIL import Image
 import torch.nn as nn
@@ -36,6 +36,7 @@ similarity_model.fc = nn.Linear(num_ftrs,  738)
 
 similarity_model.load_state_dict(torch.load('model.pth'))
 model = ScoreEstimater(topic_model, all_items, similarity_model)
+
 for i in range(LAYER):
     print(f"count of layer {LAYER_NAME[i]}: {len(all_items[i])}")
 roop_cnt = 0

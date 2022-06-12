@@ -1,12 +1,12 @@
+from constants.optimisation import LAYER, SIMILARITY_THRESHOLD
 
-
-from cv2 import threshold
-from constants.optimisation import LAYER, SIGMA_B, SIMILARITY_THRESHOLD
 from util.image_similarity_measures import rmse
 import numpy as np
 import math
 from torchvision import transforms
+from torchvision.models.feature_extraction import create_feature_extractor
 import torch
+from util.record_data import record_data
 class ScoreEstimater:
     # instance variable
     topic_model = None
@@ -19,14 +19,17 @@ class ScoreEstimater:
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
+    cos = torch.nn.CosineSimilarity(dim=0, eps=1e-6)
+
     def __init__(self, topic_model, all_items, similarity_model):
         # TODO: implement init process
         self.topic_model = topic_model
         self.all_items = all_items
 
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-        self.similarity_model = similarity_model.to(device)
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        m = similarity_model.to(self.device)
+        feature_extractor = create_feature_extractor(m, {"avgpool": "feature"})
+        self.similarity_model = feature_extractor
     
     def estimate_compatibility_score(self, coodinates):
         com_score = 0
@@ -68,7 +71,7 @@ class ScoreEstimater:
         
         for item in self.all_items[layer]:
             # 新しく追加されたアイテムと類似度計算をして、閾値より低ければ、新しくカバーしたと断定。
-            if self.calc_image_similarity(item, fashion_item) < SIMILARITY_THRESHOLD and item.get_id() not in covering_item_ids: 
+            if self.calc_image_similarity(item, fashion_item) < SIMILARITY_THRESHOLD and item.get_id() not in covering_item_ids:
                 covering_item_ids.add(item.get_id())
                 covering_item_cnt += 1
         # アイテム数で正規化
@@ -84,12 +87,15 @@ class ScoreEstimater:
         image_b = item_b.get_image()
         image_a = torch.tensor(self.transform(image_a))
         image_b = torch.tensor(self.transform(image_b))
-        image_a = image_a.unsqueeze(0)
-        image_b = image_b.unsqueeze(0)
-        dist = torch.dist(image_a, image_b, 2)
+        image_a = image_a.unsqueeze(0).to(self.device)
+        image_b = image_b.unsqueeze(0).to(self.device)
+
+        image_a_vec = self.similarity_model(image_a)["feature"].flatten()
+        image_b_vec = self.similarity_model(image_b)["feature"].flatten()
+        dist = self.cos(image_a_vec, image_b_vec)
         return dist
 
-
+    
     """
     洋服の重複度
     """
@@ -120,18 +126,18 @@ class ScoreEstimater:
         result = math.pow(math.e, result)
         result = result * pow(10, 22)
         result = 0 if result < 1 else math.log(result)
-        del doc
-        del inf_doc
+        
         return result
     
     def estimate_closet_similarity_score(self,select_items):       
         covering_item_ids = set()
-        threshold = 0.025112
         for layer in range(LAYER):
             for item in self.all_items[layer]:
                 for select_item in select_items[layer]:
                     # もし類似度計算をして、閾値より低ければカバーしたと断定。
-                    if self.calc_image_similarity(item, select_item) < SIMILARITY_THRESHOLD: 
+                    score = self.calc_image_similarity(item, select_item).item()
+                    record_data("./data/sim_new.txt", score)
+                    if score < SIMILARITY_THRESHOLD:
                         covering_item_ids.add(item.get_id())
                         break
         return len(covering_item_ids)

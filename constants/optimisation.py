@@ -23,6 +23,6 @@ class Gender(Enum):
 # ユーザの性別を指定
 USER_GENDER = Gender("MEN")
 
-SIMILARITY_THRESHOLD = 0.025112
+SIMILARITY_THRESHOLD = 0.5
 
 SIGMA_B = 7
