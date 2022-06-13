@@ -12,17 +12,17 @@ class ScoreEstimater:
     topic_model = None
     similarity_model = None
     all_items = None
-    similarity_cache = {}
+    features_cache = {}
     transform  = transforms.Compose([
         transforms.Resize(256),
         transforms.CenterCrop(224),
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
-    cos = torch.nn.CosineSimilarity(dim=0, eps=1e-6)
+    # ユークリッド距離を計算
+    calc_dist = torch.nn.PairwiseDistance(p=2)
 
     def __init__(self, topic_model, all_items, similarity_model):
-        # TODO: implement init process
         self.topic_model = topic_model
         self.all_items = all_items
 
@@ -80,22 +80,25 @@ class ScoreEstimater:
         return covering_item_cnt / all_item_cnt
     
     def calc_image_similarity(self, item_a, item_b):
-        key = (item_a.get_id(), item_b.get_id())
-        if key in self.similarity_cache:
-            return self.similarity_cache[key]
-        image_a = item_a.get_image()
-        image_b = item_b.get_image()
-        image_a = torch.tensor(self.transform(image_a))
-        image_b = torch.tensor(self.transform(image_b))
-        image_a = image_a.unsqueeze(0).to(self.device)
-        image_b = image_b.unsqueeze(0).to(self.device)
-
-        image_a_vec = self.similarity_model(image_a)["feature"].flatten()
-        image_b_vec = self.similarity_model(image_b)["feature"].flatten()
-        dist = self.cos(image_a_vec, image_b_vec)
+        image_a_vec = self.calc_image_feature(item_a)
+        image_b_vec = self.calc_image_feature(item_b)
+        dist = self.calc_dist(image_a_vec, image_b_vec)
+        dist = dist.item()
         return dist
 
-    
+    """
+    洋服の特徴量を計算する
+    """
+    def calc_image_feature(self, item):
+        item_id = item.get_id()
+        if item_id in self.features_cache:
+            return self.features_cache[item_id]
+        image = item.get_image()
+        image = self.transform(image)
+        image = image.unsqueeze(0).to(self.device)
+        image_feature = self.similarity_model(image)["feature"].flatten()
+        self.features_cache[id] = image_feature
+        return image_feature
     """
     洋服の重複度
     """
@@ -135,9 +138,9 @@ class ScoreEstimater:
             for item in self.all_items[layer]:
                 for select_item in select_items[layer]:
                     # もし類似度計算をして、閾値より低ければカバーしたと断定。
-                    score = self.calc_image_similarity(item, select_item).item()
-                    record_data("./data/sim_new.txt", score)
+                    score = self.calc_image_similarity(item, select_item)
                     if score < SIMILARITY_THRESHOLD:
                         covering_item_ids.add(item.get_id())
                         break
-        return len(covering_item_ids)
+        max_length = sum([len(i) for i in self.all_items])
+        return len(covering_item_ids) / max_length

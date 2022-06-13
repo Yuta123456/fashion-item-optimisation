@@ -1,12 +1,12 @@
 WEIGHT = {
-    "com": 10/738,
-    "ver": 80,
-    "sim": 10/927,
-    "mul": 10/60,
-    # "com": 0,
-    # "ver": 0,
-    # "sim": 0,
-    # "mul": 0,
+    # "com": 10/738,
+    # "ver": 80,
+    # "sim": 10/927,
+    # "mul": 10/60,
+    "com": 1,
+    "ver": 1,
+    "sim": 1,
+    "mul": 1,
 }
 
 LAYER = 3
@@ -23,6 +23,6 @@ class Gender(Enum):
 # ユーザの性別を指定
 USER_GENDER = Gender("MEN")
 
-SIMILARITY_THRESHOLD = 0.5
+SIMILARITY_THRESHOLD = 1.294459
 
 SIGMA_B = 7
