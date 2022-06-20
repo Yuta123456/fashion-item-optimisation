@@ -1,4 +1,5 @@
 # レイヤーの個数 ex) tops, pants, shoes -> LAYER = 3
+import sys
 import time
 from constants.optimisation import EPSILON, LAYER, LAYER_NAME, TIME_STEP
 from util.calc_closet_score import calc_closet_score
@@ -27,7 +28,16 @@ similarity_model.fc = nn.Linear(num_ftrs,  738)
 
 similarity_model.load_state_dict(torch.load('model.pth'))
 
-
+if "--clear" in sys.argv:
+    with open("data/com.txt", mode="w") as f:
+        f.write("")
+    with open("data/sim.txt", mode="w") as f:
+        f.write("")
+    with open("data/ver.txt", mode="w") as f:
+        f.write("")
+    with open("data/mul.txt", mode="w") as f:
+        f.write("")
+    print("data clear run")
 COUNT = 10000
 CLOSET_ITEM_NUM = 70
 for cnt in range(COUNT):
