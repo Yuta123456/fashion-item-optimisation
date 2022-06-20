@@ -26,9 +26,9 @@ def select_max_incremental_item(select_items, all_items, layer, estimater: Score
         simirality_score = estimater.estimate_similarity_score(item, select_items, layer)
         multiply_score = estimater.calc_multiplicity(coodinates)
         score_of_item = compatibility_score * WEIGHT["com"] \
-        + versatility_score * WEIGHT["ver"] \
-        + simirality_score * WEIGHT["sim"] \
-        + multiply_score * WEIGHT["mul"]
+                      + versatility_score   * WEIGHT["ver"] \
+                      + simirality_score    * WEIGHT["sim"] \
+                      + multiply_score      * WEIGHT["mul"]
         if  score_of_item > max_score:
             max_score =  score_of_item
             max_incremental_item = item
