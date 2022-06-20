@@ -1,4 +1,4 @@
-from constants.optimisation import LAYER, SIMILARITY_THRESHOLD
+from constants.optimisation import LAYER, SIGMA_B, SIMILARITY_THRESHOLD
 
 from util.image_similarity_measures import rmse
 import numpy as np
@@ -25,7 +25,7 @@ class ScoreEstimater:
     def __init__(self, topic_model, all_items, similarity_model):
         self.topic_model = topic_model
         self.all_items = all_items
-
+        self.all_item_num = sum([len(i) for i in self.all_items])
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         m = similarity_model.to(self.device)
         feature_extractor = create_feature_extractor(m, {"avgpool": "feature"})
@@ -96,22 +96,19 @@ class ScoreEstimater:
         image = item.get_image()
         image = self.transform(image)
         image = image.unsqueeze(0).to(self.device)
-        image_feature = self.similarity_model(image)["feature"].flatten()
-        self.features_cache[id] = image_feature
+        image_feature = self.similarity_model(image)["feature"].flatten().detach().cpu() 
+        self.features_cache[item_id] = image_feature
         return image_feature
     """
     洋服の重複度
     """
     def calc_multiplicity(self, coodinates):
         com_good_count = 0
-        threshold = 7
         # coodinateは、FashionItemの配列
         for coodinate in coodinates:
-            doc = []
             com_score = self.estimate_coodinate_compatibility(coodinate)
-            if com_score > threshold:
+            if com_score > SIGMA_B:
                 com_good_count += 1
-        del doc
 
         return com_good_count
 
@@ -132,7 +129,7 @@ class ScoreEstimater:
         
         return result
     
-    def estimate_closet_similarity_score(self,select_items):       
+    def estimate_closet_similarity_score(self,select_items):
         covering_item_ids = set()
         for layer in range(LAYER):
             for item in self.all_items[layer]:
@@ -142,5 +139,4 @@ class ScoreEstimater:
                     if score < SIMILARITY_THRESHOLD:
                         covering_item_ids.add(item.get_id())
                         break
-        max_length = sum([len(i) for i in self.all_items])
-        return len(covering_item_ids) / max_length
+        return len(covering_item_ids) / self.all_item_num
