@@ -16,7 +16,7 @@ import torch.nn as nn
 import random
 
 # start = time.time()
-original_all_items = init_all_item(LAYER, LAYER_NAME, 400)
+original_all_items = init_all_item(LAYER, LAYER_NAME, 200)
 
 # FashionItemの初期化
 
@@ -24,7 +24,7 @@ topic_model = tp.LDAModel.load('lda_model_topic_10.bin')
 similarity_model = models.resnet18(pretrained=True)
 num_ftrs = similarity_model.fc.in_features
 
-similarity_model.fc = nn.Linear(num_ftrs,  738)
+similarity_model.fc = nn.Linear(num_ftrs, 738)
 
 similarity_model.load_state_dict(torch.load('model.pth'))
 
@@ -39,12 +39,13 @@ if "--clear" in sys.argv:
         f.write("")
     print("data clear run")
 COUNT = 10000
-CLOSET_ITEM_NUM = 70
+CLOSET_ITEM_NUM = 40
+model = ScoreEstimater(topic_model, [[], [], []], similarity_model)
 for cnt in range(COUNT):
-    all_items = [random.sample(original_all_items[i], 70) for i in range(LAYER)]
+    all_items = [random.sample(original_all_items[i], CLOSET_ITEM_NUM) for i in range(LAYER)]
     # closet.append(random.sample(all_items[i], 4))
     select_items = init_closet(all_items, TIME_STEP)
-    model = ScoreEstimater(topic_model, all_items, similarity_model)
+    model.set_all_items(all_items)
     delta_obj = EPSILON + 1
     pre_obj = 0 
     # ここから最適化
@@ -68,6 +69,7 @@ for cnt in range(COUNT):
     record_data("data/ver.txt", score[1])
     record_data("data/sim.txt", score[2])
     record_data("data/mul.txt", score[3])
+    print(score)
     cnt += 1
     if (cnt % 5 == 0):
         print(f"{cnt * 100 / COUNT}% 終了しました")
