@@ -4,8 +4,8 @@ WEIGHT = {
     # "sim": 10/927,
     # "mul": 10/60,
     "com": 1,
+    "sim": 6,
     "ver": 1,
-    "sim": 1,
     "mul": 1,
 }
 
@@ -23,6 +23,20 @@ class Gender(Enum):
 # ユーザの性別を指定
 USER_GENDER = Gender("MEN")
 
+# この二つの値は実験によって変える
 SIMILARITY_THRESHOLD = 1.294459
 
-SIGMA_B = 7
+SIGMA_B = -50
+
+MEAN = {
+    "com": -4000,
+    "sim": 0.865,
+    "ver": 0.083,
+    "mul": 0.164,
+}
+STD = {
+    "com": 200,
+    "sim": 0.42,
+    "ver": 0.002,
+    "mul": 0.117,
+}
