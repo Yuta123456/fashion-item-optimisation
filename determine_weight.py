@@ -69,7 +69,7 @@ for cnt in range(COUNT):
     record_data("data/ver.txt", score[1])
     record_data("data/sim.txt", score[2])
     record_data("data/mul.txt", score[3])
-    print(score)
+    print("com:{:.2f} ver:{:.2f} sim:{:.2f} mul:{:.2f}".format(*score))
     cnt += 1
     if (cnt % 5 == 0):
         print(f"{cnt * 100 / COUNT}% 終了しました")
