@@ -6,10 +6,18 @@ import math
 def describe(filepath):
     df = pd.read_csv(filepath, sep="\n").loc[:500000]
     # df = df[df != 0].dropna()
-    dmin = df.min().values[0]
-    dmax = df.max().values[0]
-    # df = df.applymap(lambda x:(x - (dmin))/(dmax - dmin))
-    print(dmin, dmax)
+    mean = df.mean().values[0]
+    std = df.std().values[0]
+
+    # 外れ値
+    # df = df[(df <= mean + 3 * std)].dropna()
+    df = df[(df >= mean - 3 * std)].dropna()
+
+    # mean = df.mean().values[0]
+    # std = df.std().values[0]
+    # df = (df - mean) / std
+
+
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     ax.hist(df.values)
@@ -17,9 +25,14 @@ def describe(filepath):
     plt.xlabel('index')
     plt.show()
     print(df.describe())
+    return mean, std
 
-describe("data/com.txt")
-describe("data/sim.txt")
-describe("data/ver.txt")
-describe("data/mul.txt")
-# describe("data/log_compatibility.txt")
+mean, std = describe("data/com.txt")
+print(f"==============compatibility===============\nmean: {mean} std: {std}\n====================================")
+mean, std = describe("data/sim.txt") 
+print(f"===============similarity==============\nmean: {mean} std: {std}\n====================================")
+mean, std = describe("data/ver.txt")
+print(f"==============versatility==============\nmean: {mean} std: {std}\n====================================")
+mean, std = describe("data/mul.txt")
+print(f"==============multiply==============\nmean: {mean} std: {std}\n====================================")
+
