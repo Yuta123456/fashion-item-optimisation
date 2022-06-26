@@ -1,4 +1,4 @@
-from constants.optimisation import LAYER, SIGMA_B, SIMILARITY_THRESHOLD
+from constants.optimisation import LAYER, SIGMA_B, SIMILARITY_THRESHOLD, TIME_STEP
 
 from util.image_similarity_measures import rmse
 import numpy as np
@@ -31,6 +31,10 @@ class ScoreEstimater:
         feature_extractor = create_feature_extractor(m, {"avgpool": "feature"})
         self.similarity_model = feature_extractor
     
+    def set_all_items(self, all_items):
+        self.all_items = all_items
+        self.all_item_num = sum([len(i) for i in self.all_items])
+
     def estimate_compatibility_score(self, coodinates):
         com_score = 0
         # coodinateは、FashionItemの配列
@@ -110,7 +114,7 @@ class ScoreEstimater:
             if com_score > SIGMA_B:
                 com_good_count += 1
 
-        return com_good_count
+        return com_good_count / pow(TIME_STEP, LAYER)
 
     def estimate_coodinate_compatibility(self, coodinate):
         doc = []
@@ -123,9 +127,10 @@ class ScoreEstimater:
         result = self.topic_model.infer(inf_doc)
         # 対数であったり、問題はありそう。
         result = result[1]
-        result = math.pow(math.e, result)
-        result = result * pow(10, 22)
-        result = 0 if result < 1 else math.log(result)
+        record_data("data/coodinate.txt", result)
+        # result = math.pow(math.e, result)
+        # result = result * pow(10, 22)
+        # result = 0 if result < 1 else math.log(result)
         
         return result
     
