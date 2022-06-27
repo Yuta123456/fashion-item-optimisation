@@ -38,6 +38,7 @@ class ScoreEstimater:
     def estimate_compatibility_score(self, coodinates):
         com_score = 0
         # coodinateは、FashionItemの配列
+        assert(coodinates <= 16)
         for coodinate in coodinates:
             com_score += self.estimate_coodinate_compatibility(coodinate)
         return com_score
@@ -60,6 +61,7 @@ class ScoreEstimater:
         coodinate_len = len(coodinates)
         if (topic_num * coodinate_len) == 0:
             return ver_score
+        assert(coodinate_len <= 16)
         # topic数で正規化。0-1の範囲に収まる
         return ver_score / (topic_num * coodinate_len)
 
@@ -83,7 +85,7 @@ class ScoreEstimater:
                 covering_item_ids.add(item.get_id())
                 covering_item_cnt += 1
 
-        return covering_item_cnt / self.all_item_num
+        return covering_item_cnt / len(self.all_items[0])
     
     def calc_image_similarity(self, item_a, item_b):
         image_a_vec = self.calc_image_feature(item_a)
@@ -115,8 +117,8 @@ class ScoreEstimater:
             com_score = self.estimate_coodinate_compatibility(coodinate)
             if com_score > SIGMA_B:
                 com_good_count += 1
-
-        return com_good_count / pow(TIME_STEP, LAYER)
+        assert(com_good_count <= 16)
+        return com_good_count / 16
 
     def estimate_coodinate_compatibility(self, coodinate):
         doc = []
@@ -129,8 +131,7 @@ class ScoreEstimater:
         result = self.topic_model.infer(inf_doc)
         # 対数であったり、問題はありそう。
         result = result[1]
-        record_data("data/coodinate.txt", result)
-        
+
         return result
     
     def estimate_closet_similarity_score(self, select_items):
@@ -143,4 +144,5 @@ class ScoreEstimater:
                     if score < SIMILARITY_THRESHOLD:
                         covering_item_ids.add(item.get_id())
                         break
-        return len(covering_item_ids) / self.all_item_num
+
+        return len(covering_item_ids) / len(self.all_items[0])
