@@ -63,25 +63,27 @@ class ScoreEstimater:
         # topic数で正規化。0-1の範囲に収まる
         return ver_score / (topic_num * coodinate_len)
 
-    def estimate_similarity_score(self, fashion_item, select_items,layer):
+    def estimate_similarity_score(self, fashion_item, select_items, layer):
         covering_item_ids = set()
         covering_item_cnt = 0
+        # ここめちゃくちゃおっそい。
         for item in self.all_items[layer]:
             for select_item in select_items[layer]:
                 # もし類似度計算をして、閾値より低ければカバーしたと断定。
-                if item.get_id() not in covering_item_ids and self.calc_image_similarity(item, select_item) < SIMILARITY_THRESHOLD : 
+                if self.calc_image_similarity(item, select_item) < SIMILARITY_THRESHOLD:
                     covering_item_ids.add(item.get_id())
                     break
         
         for item in self.all_items[layer]:
+            if item.get_id() not in covering_item_ids:
+                # もし、既にカバーされてるんだったら、新しくないのでスキップ
+                continue
             # 新しく追加されたアイテムと類似度計算をして、閾値より低ければ、新しくカバーしたと断定。
-            if self.calc_image_similarity(item, fashion_item) < SIMILARITY_THRESHOLD and item.get_id() not in covering_item_ids:
+            if self.calc_image_similarity(item, fashion_item) < SIMILARITY_THRESHOLD:
                 covering_item_ids.add(item.get_id())
                 covering_item_cnt += 1
-        # アイテム数で正規化
-        all_item_cnt = len(self.all_items[layer])
-        del covering_item_ids
-        return covering_item_cnt / all_item_cnt
+
+        return covering_item_cnt / self.all_item_num
     
     def calc_image_similarity(self, item_a, item_b):
         image_a_vec = self.calc_image_feature(item_a)
@@ -100,7 +102,7 @@ class ScoreEstimater:
         image = item.get_image()
         image = self.transform(image)
         image = image.unsqueeze(0).to(self.device)
-        image_feature = self.similarity_model(image)["feature"].flatten().detach().cpu() 
+        image_feature = self.similarity_model(image)["feature"].flatten().detach().cpu()
         self.features_cache[item_id] = image_feature
         return image_feature
     """
@@ -128,13 +130,10 @@ class ScoreEstimater:
         # 対数であったり、問題はありそう。
         result = result[1]
         record_data("data/coodinate.txt", result)
-        # result = math.pow(math.e, result)
-        # result = result * pow(10, 22)
-        # result = 0 if result < 1 else math.log(result)
         
         return result
     
-    def estimate_closet_similarity_score(self,select_items):
+    def estimate_closet_similarity_score(self, select_items):
         covering_item_ids = set()
         for layer in range(LAYER):
             for item in self.all_items[layer]:
