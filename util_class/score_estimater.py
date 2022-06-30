@@ -38,7 +38,7 @@ class ScoreEstimater:
     def estimate_compatibility_score(self, coodinates):
         com_score = 0
         # coodinateは、FashionItemの配列
-        assert(coodinates <= 16)
+        assert(len(coodinates) <= 16)
         for coodinate in coodinates:
             com_score += self.estimate_coodinate_compatibility(coodinate)
         return com_score
