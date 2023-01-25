@@ -28,25 +28,33 @@ similarity_model.fc = nn.Linear(num_ftrs,  738)
 similarity_model.load_state_dict(torch.load('model.pth'))
 
 if "--clear" in sys.argv:
-    with open("data/com.txt", mode="w") as f:
+    with open("data/rand_com.txt", mode="w") as f:
         f.write("")
-    with open("data/sim.txt", mode="w") as f:
+    with open("data/rand_sim.txt", mode="w") as f:
         f.write("")
-    with open("data/ver.txt", mode="w") as f:
+    with open("data/rand_ver.txt", mode="w") as f:
         f.write("")
-    with open("data/mul.txt", mode="w") as f:
+    with open("data/rand_mul.txt", mode="w") as f:
         f.write("")
     print("data clear run")
 estimater = ScoreEstimater(topic_model, all_items, similarity_model)
-COUNT = 20000
+COUNT = 30
+print("start")
+average_score = [0 for _ in range(4)]
 for c in range(COUNT):
     closet = []
     for i in range(LAYER):
         closet.append(random.sample(all_items[i], 4))
-    score = calc_closet_score(closet, estimater)
-    record_data("data/com.txt", score[0])
-    record_data("data/ver.txt", score[1])
-    record_data("data/sim.txt", score[2])
-    record_data("data/mul.txt", score[3])
+    start = time.time()
+    score = calc_closet_score(closet, estimater, False)
+    # record_data("data/rand_com.txt", score[0])
+    # record_data("data/rand_ver.txt", score[1])
+    # record_data("data/rand_sim.txt", score[2])
+    # record_data("data/rand_mul.txt", score[3])
+    for i, v in enumerate(score):
+            average_score[i] += v
+    average_score = list(map(lambda x: x/COUNT, average_score))
+    # record_data("data/new_sim.txt", score[2])
     if c % 1000 == 0:
         print(f"{c * 100 / COUNT}%")
+print(average_score)

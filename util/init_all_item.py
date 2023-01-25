@@ -19,8 +19,8 @@ def init_all_item(LAYER, LAYER_NAME, length):
     all_item = [[] for i in range(LAYER)]
     # dir_pathes = glob.glob('../images/RichWearImageSprited/**/**/')[:length]
     # FIXME: 今はdataset_pathのみ取得
-    # with open("experiments/dataset_path.txt", mode='r') as f:
-    with open("experiments/mini_data.txt") as f:
+    with open("experiments/dataset_path.txt", mode='r') as f:
+    # with open("experiments/mini_data.txt") as f:
         dir_pathes = [s.strip() for s in f.readlines()]
     for dir_path in dir_pathes:
         photo_name = dir_path.replace("\\", "/")

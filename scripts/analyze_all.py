@@ -27,12 +27,19 @@ def describe(filepath):
     print(df.describe())
     return mean, std
 
-mean, std = describe("data/rand_com.txt")
+mean, std = describe("data/com_w.txt")
 print(f"==============compatibility===============\nmean: {mean} std: {std}\n====================================")
-mean, std = describe("data/rand_sim.txt")
+mean, std = describe("data/sim_w.txt")
 print(f"===============similarity==============\nmean: {mean} std: {std}\n====================================")
-mean, std = describe("data/rand_ver.txt")
+mean, std = describe("data/ver_w.txt")
 print(f"==============versatility==============\nmean: {mean} std: {std}\n====================================")
-mean, std = describe("data/rand_mul.txt")
+mean, std = describe("data/mul_w.txt")
 print(f"==============multiply==============\nmean: {mean} std: {std}\n====================================")
 
+# mean, std = describe("data/simirality.txt")
+# print(f"==============similarity==============\nmean: {mean} std: {std}\n====================================")
+
+
+# mean, std = describe("data/new_sim.txt")
+# mean, std = describe("data/new_sim.txt")
+# print(f"==============similarity==============\nmean: {mean} std: {std}\n====================================")

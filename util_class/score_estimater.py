@@ -135,8 +135,9 @@ class ScoreEstimater:
         return result
     
     def estimate_closet_similarity_score(self, select_items):
-        covering_item_ids = set()
+        res = []
         for layer in range(LAYER):
+            covering_item_ids = set()
             for item in self.all_items[layer]:
                 for select_item in select_items[layer]:
                     # もし類似度計算をして、閾値より低ければカバーしたと断定。
@@ -144,5 +145,7 @@ class ScoreEstimater:
                     if score < SIMILARITY_THRESHOLD:
                         covering_item_ids.add(item.get_id())
                         break
-
-        return len(covering_item_ids) / len(self.all_items[0])
+            score = len(covering_item_ids) / len(self.all_items[0])
+            res.append(score)
+            record_data("data/simirality.txt", score)
+        return res

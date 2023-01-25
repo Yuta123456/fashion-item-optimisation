@@ -5,6 +5,6 @@ def save_closet(select_items, filename):
     for layer_item in select_items:
         for item in layer_item:
             # 上書きモード
-            with open("closet/" + filename, mode='w') as f:
+            with open("closet/" + filename, mode='a') as f:
                 # 該当するレイヤーのアイテムだけ取得
                 f.write(str(item.get_image_path()) + "\n")
