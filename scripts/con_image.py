@@ -22,7 +22,7 @@ def concat_tile_resize(im_list_2d, interpolation=cv2.INTER_CUBIC):
     return vconcat_resize_min(im_list_v, interpolation=cv2.INTER_CUBIC)
 
 
-closet_names = glob.glob('closet/select_two/**/**/**')
+closet_names = glob.glob('closet/select_two_comp/**/*')
 for closet_name in closet_names:
     closet_name = closet_name.replace("\\", "/")
     closet_name = closet_name[7:]
